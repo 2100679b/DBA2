@@ -1,4 +1,10 @@
 [[redirects]]
+  from = "/api/*"
+  to = "http://18.119.167.171:3001/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
