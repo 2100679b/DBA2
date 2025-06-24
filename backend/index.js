@@ -48,8 +48,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Iniciar servidor
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://18.119.167.171:${PORT}`);
-});
+// Exportar la instancia de Express para que pueda usarse en daemon.js
+module.exports = app;

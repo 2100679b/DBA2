@@ -5,11 +5,13 @@ console.log('🔹 Iniciando daemon.js - PID:', process.pid);
 // 1. Cargar variables críticas primero
 const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
+const PROTOCOL = process.env.PROTOCOL || 'http'; // agrega variable opcional para protocolo
 console.log('🔹 Configuración:');
 console.log(`- PORT: ${PORT}`);
 console.log(`- HOST: ${HOST}`);
 console.log(`- DB_HOST: ${process.env.DB_HOST || 'No configurado'}`);
 console.log(`- NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`- PROTOCOL: ${PROTOCOL}`);
 
 // 2. Cargar la aplicación
 let app;
@@ -33,7 +35,7 @@ try {
 // 3. Iniciar servidor
 console.log('🔹 Iniciando servidor Express...');
 const server = app.listen(PORT, HOST, () => {
-  console.log(`✅ Servidor backend activo en https://${HOST}:${PORT}`);
+  console.log(`✅ Servidor backend activo en ${PROTOCOL}://${HOST}:${PORT}`);
   console.log(`📅 Inicio: ${new Date().toLocaleString()}`);
   console.log(`🌎 Entorno: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔄 PID: ${process.pid}`);
@@ -85,5 +87,5 @@ const gracefulShutdown = (signal) => {
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
-// 7. Solo para propósitos de prueba
+// 7. Solo para propósitos de prueba o testeo
 module.exports = server;
