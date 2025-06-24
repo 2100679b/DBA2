@@ -109,27 +109,23 @@ export default {
       }
     },
     async guardar() {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL
-        if (!apiUrl) throw new Error('API URL no configurada')
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL
+    if (!apiUrl) throw new Error('API URL no configurada')
 
-        const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
-        console.log('✅ Dispositivo creado:', response.data)
+    const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
+    console.log('✅ Dispositivo creado:', response.data)
 
-        this.limpiar()
-      } catch (error) {
-        console.error('❌ Error al guardar:', error)
-        this.alerta.mensaje =
-          error.response?.data?.error ||
-          error.message ||
-          'No se pudo guardar el dispositivo. Intente más tarde.'
-      }
-    },
-    limpiar() {
-      this.dispositivo = this.getDispositivoInicial()
-      this.alerta.mensaje = ''
-      this.$router.push('/menu/dispositivos')
-    }
+    this.limpiar()
+  } catch (error) {
+    console.error('❌ Error al guardar:', error)
+    this.alerta.mensaje =
+      error.response?.data?.error ||
+      error.message ||
+      'No se pudo guardar el dispositivo. Intente más tarde.'
+  }
+}
+
   }
 }
 </script>
