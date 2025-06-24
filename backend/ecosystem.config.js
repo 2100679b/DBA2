@@ -20,7 +20,7 @@ module.exports = {
         DB_PORT: '5432',
         DB_SSL: 'true',
         JWT_SECRET: 'tu_super_secreto',
-        FRONTEND_ORIGIN: 'https://protipweb.netlify.app'
+        FRONTEND_ORIGIN: 'https://demodba2.netlify.app/'
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',
