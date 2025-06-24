@@ -5,7 +5,7 @@
 # Proxy para el backend en producción
 [[redirects]]
   from = "/api/*"
-  to = "http://18.119.167.171:3001/api/:splat"
+  to = "https://18.119.167.171:3001/api/:splat"
   status = 200
   force = true
 
