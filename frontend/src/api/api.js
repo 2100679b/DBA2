@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL, // Esto toma el valor de http://18.119.167.171:3000 desde tu .env
+  baseURL: import.meta.env.VITE_API_URL || 'http://18.119.167.171:3001',
   timeout: 10000, // Tiempo máximo de espera en milisegundos
 });
 
