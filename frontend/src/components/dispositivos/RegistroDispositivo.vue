@@ -129,7 +129,7 @@ export default {
       this.dispositivo.identifica.nombre = ''
       this.dispositivo.identifica.ubicacion = ''
       this.alerta.mensaje = ''
-      this.$router.push('/menu/dispositivos')
+      this.$router.push('/menu/dispositivo')
     }
   }
 }
