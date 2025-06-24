@@ -4,7 +4,7 @@ const db = require('../db/db');
 const auth = require('../middleware/auth');
 
 // Ruta simple de prueba sin auth ni validaciones
-router.post('/dispositivos', (req, res) => {
+router.post('/', (req, res) => {
   console.log('✅ Solicitud POST recibida en /dispositivos');
   console.log('📦 Datos recibidos:', req.body);
   res.status(201).json({ message: 'Dispositivo creado (ruta básica)' });
