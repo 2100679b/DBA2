@@ -104,33 +104,49 @@ export default {
       }
     }
   },
-  methods: {
-    async guardar() {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL
-        const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
+methods: {
+  async guardar() {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL
+      if (!apiUrl) throw new Error('API URL no configurada')
 
-        console.log('✅ Dispositivo creado:', response.data)
-
-        // Puedes actualizar Vuex si es necesario
-        // const dispositivos = this.$store.state.dispositivos
-        // dispositivos.push(response.data)
-        // this.$store.commit('setDispositivos', dispositivos)
-
-        this.limpiar()
-      } catch (error) {
-        console.error('❌ Error al guardar:', error.response?.data || error)
-        this.alerta.mensaje =
-          error.response?.data?.error || 'No se pudo guardar el dispositivo. Intente más tarde.'
-      }
-    },
-    limpiar() {
-      this.dispositivo.identifica.identificador = 0
-      this.dispositivo.identifica.nombre = ''
-      this.dispositivo.identifica.ubicacion = ''
-      this.alerta.mensaje = ''
-      this.$router.push('/menu/dispositivos')
+      const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
+      console.log('✅ Dispositivo creado:', response.data)
+      this.limpiar()
+    } catch (error) {
+      console.error('❌ Error al guardar:', error.response?.data || error)
+      this.alerta.mensaje =
+        error.response?.data?.error || 'No se pudo guardar el dispositivo. Intente más tarde.'
     }
+  },
+limpiar() {
+  this.dispositivo = {
+    identifica: {
+      identificador: 0,
+      nombre: '',
+      ubicacion: '',
+      coordenadas: '19.7060° N, 101.1950° W',
+      potencia: { nominal: 7.2, minimo: 6.2, maximo: 8.6, um: 'KW' },
+      voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
+      corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
+      caudal: { nominal: 1, minimo: 0.1, maximo: 1.2, um: 'm3/minuto' },
+      fechaRegistro: new Date().toUTCString()
+    },
+    opera: {
+      potencia: { valor: 7.2, idEstatus: 1 },
+      voltaje: { valor: 240, idEstatus: 1 },
+      corriente: { valor: 30, idEstatus: 1 },
+      caudal: { valor: 1, idEstatus: 1 },
+      idEstatus: 1,
+      estatus: 'Operacion Normal',
+      fechaRegistro: new Date().toUTCString()
+    },
+    estado: 1
+  }
+  this.alerta.mensaje = ''
+  this.$router.push('/menu/dispositivos')
+}
+
   }
 }
 </script>
