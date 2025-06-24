@@ -1,0 +1,42 @@
+:root {
+    --primary-color: #0399fd;
+    --accent-color: #00cc55;
+    --background-dark: #191919;
+    --background-darker: #141414;
+    --text-color: white;
+    --shadow-color: rgba(252, 5, 5, 0.5);
+  
+    --primary-color-rgb: 3, 153, 253;
+    --accent-color-rgb: 0, 204, 85;
+    --shadow-color-rgb: 252, 5, 5;
+    --text-color-rgb: 255, 255, 255;
+  
+    --error-color: #c62828;
+    --error-color-rgb: 198, 40, 40;
+    --error-text: #ff6b6b;
+    --error-border: #f44336;
+    --warning-color: #ffa726;
+    --success-color: #66bb6a;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(45deg, #232121, #1a1a1a, #2a2a2a);
+    background-size: 400%;
+    animation: bgGradient 15s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  @keyframes bgGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+  

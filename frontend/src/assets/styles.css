@@ -1,0 +1,70 @@
+/* Estilos generales */
+.btn-add-device {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-add-device:hover {
+    background-color: #0b5ed7;
+    transform: scale(1.05);
+}
+
+/* Estilos para tarjetas */
+.card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0,0,0,0.03);
+}
+
+/* Estilos para la tabla */
+.table-bordered {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-bordered th {
+    background-color: #f8f9fa;
+}
+
+/* Colores para estados */
+.text-success { color: #28a745 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-danger { color: #dc3545 !important; }
+
+/* Modal */
+.modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Formulario */
+.record-card {
+    max-width: 500px;
+    min-width: 400px;
+    width: 100%;
+}

@@ -1,56 +1,55 @@
 require('dotenv').config();
-
 const express = require('express');
-const { Pool } = require('pg');
-
-const {
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_NAME,
-  DB_PORT,
-  DB_SSL,
-  NODE_ENV
-} = process.env;
-
-// Crear la aplicación Express
 const app = express();
+const cors = require('cors');
+const morgan = require('morgan');
 
-// Configurar pool de base de datos
-const pool = new Pool({
-  host: DB_HOST,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_NAME,
-  port: DB_PORT,
-  ssl: DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-});
-
-// Middleware
+// Middlewares
 app.use(express.json());
+app.use(morgan('dev'));
+
+// Configuración de CORS
+const corsOptions = {
+  origin: process.env.FRONTEND_ORIGIN || '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 
 // Rutas
+const usersRoutes = require('./routes/users');
+const dispositivosRoutes = require('./routes/dispositivos');
+
+// Asociar rutas principales
+app.use('/api/users', usersRoutes);
+app.use('/api/dispositivos', dispositivosRoutes);
+
+// Ruta de prueba para saber si el backend está activo
 app.get('/', (req, res) => {
-  res.send('Servidor Express funcionando');
+  res.json({ 
+    mensaje: '🚀 Backend activo y funcionando',
+    version: '1.0.0',
+    entorno: process.env.NODE_ENV || 'development'
+  });
 });
 
-// Test de conexión a BD (opcional)
-app.get('/health', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
-    res.json({ 
-      status: 'OK', 
-      database: 'Connected',
-      timestamp: result.rows[0].now 
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      status: 'ERROR', 
-      database: 'Disconnected',
-      error: error.message 
-    });
-  }
+// Middleware para rutas no encontradas
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// Exportar app y pool
-module.exports = { app, pool };
+// Manejador global de errores
+app.use((err, req, res, next) => {
+  console.error('\x1b[31m', '⚠️ Error:', err.stack);
+  res.status(500).json({ 
+    error: 'Error interno del servidor',
+    detalle: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Iniciar servidor
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://18.119.167.171:${PORT}`);
+});

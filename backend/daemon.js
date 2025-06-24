@@ -1,92 +1,89 @@
-// Cargar variables de entorno
+// daemon.js (versión mejorada)
 require('dotenv').config();
+console.log('🔹 Iniciando daemon.js - PID:', process.pid);
 
-console.log('🔧 Cargando aplicación...');
-
-let app, pool;
-
-try {
-  const modules = require('./index');
-  app = modules.app;
-  pool = modules.pool;
-  console.log('✅ Módulos cargados correctamente');
-} catch (error) {
-  console.error('❌ Error al cargar módulos:', error.message);
-  process.exit(1);
-}
-
-const PORT = process.env.PORT || 3000;
+// 1. Cargar variables críticas primero
+const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
+console.log('🔹 Configuración:');
+console.log(`- PORT: ${PORT}`);
+console.log(`- HOST: ${HOST}`);
+console.log(`- DB_HOST: ${process.env.DB_HOST || 'No configurado'}`);
+console.log(`- NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 
-console.log(`🔧 Configuración:`);
-console.log(`   Puerto: ${PORT}`);
-console.log(`   Host: ${HOST}`);
-console.log(`   Entorno: ${process.env.NODE_ENV || 'development'}`);
-
-let server;
-
+// 2. Cargar la aplicación
+let app;
 try {
-  server = app.listen(PORT, HOST, () => {
-    console.log(`🚀 Servidor iniciado en http://${HOST}:${PORT}`);
-    console.log(`📅 Iniciado el: ${new Date().toLocaleString()}`);
-    console.log(`🌱 Entorno: ${process.env.NODE_ENV || 'development'}`);
-    console.log('');
-  });
+  app = require('./index');
+  
+  // Verificación profunda de Express
+  if (!app || typeof app.listen !== 'function') {
+    console.error('❌ Error: index.js no exporta una instancia válida de Express');
+    console.log('🔍 Detalles:', {
+      type: typeof app,
+      methods: app ? Object.keys(app) : 'null'
+    });
+    process.exit(1);
+  }
 } catch (error) {
-  console.error('❌ Error al iniciar servidor:', error.message);
+  console.error('❌ Error fatal al importar la aplicación:', error.stack || error.message);
   process.exit(1);
 }
 
-const gracefulShutdown = (signal) => {
-  console.log(`\n📤 Señal ${signal} recibida. Cerrando el servidor...`);
+// 3. Iniciar servidor
+console.log('🔹 Iniciando servidor Express...');
+const server = app.listen(PORT, HOST, () => {
+  console.log(`✅ Servidor backend activo en https://${HOST}:${PORT}`);
+  console.log(`📅 Inicio: ${new Date().toLocaleString()}`);
+  console.log(`🌎 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔄 PID: ${process.pid}`);
+});
 
-  if (!server) {
-    console.log('⚠️ No hay servidor para cerrar');
-    process.exit(0);
+// 4. Configurar manejadores de eventos
+server.on('error', (error) => {
+  console.error('❌ Error del servidor:', error.code || error.message);
+  
+  if (error.code === 'EADDRINUSE') {
+    console.error(`💡 El puerto ${PORT} está ocupado. Soluciones:`);
+    console.error(`1. Cambia el puerto: export PORT=${Number(PORT)+1}`);
+    console.error(`2. Libera el puerto: sudo kill -9 $(sudo lsof -t -i:${PORT})`);
   }
+  
+  process.exit(1);
+});
 
+// 5. Manejo de errores globales
+process.on('uncaughtException', (err) => {
+  console.error('\n🔥 uncaughtException:', err.stack || err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('\n🔥 unhandledRejection:', reason);
+});
+
+// 6. Cierre controlado
+const gracefulShutdown = (signal) => {
+  console.log(`\n📤 Señal ${signal} recibida. Cerrando servidor...`);
+  
   server.close((err) => {
     if (err) {
-      console.error('❌ Error al cerrar el servidor:', err);
-      process.exit(1);
+      console.error('❌ Error al cerrar servidor:', err);
+      return process.exit(1);
     }
-
-    console.log('🔌 Cerrando conexión a la base de datos...');
-    
-    if (pool) {
-      pool.end((poolErr) => {
-        if (poolErr) {
-          console.error('❌ Error al cerrar la conexión a BD:', poolErr);
-        } else {
-          console.log('✅ Conexión a BD cerrada');
-        }
-        console.log('✅ Servidor cerrado correctamente');
-        process.exit(0);
-      });
-    } else {
-      console.log('✅ Servidor cerrado correctamente');
-      process.exit(0);
-    }
+    console.log('✅ Servidor cerrado correctamente');
+    process.exit(0);
   });
 
-  // Timeout de seguridad
+  // Forzar cierre después de 10 segundos
   setTimeout(() => {
-    console.error('⏰ Cierre forzado tras timeout de 30s');
+    console.error('⏰ Cierre forzado tras 10 segundos');
     process.exit(1);
-  }, 30000);
+  }, 10000);
 };
 
-// Manejo de señales
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
-// Manejo de errores no capturados
-process.on('uncaughtException', (err) => {
-  console.error('❌ Error no capturado:', err);
-  gracefulShutdown('UNCAUGHT_EXCEPTION');
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Promesa rechazada no manejada:', reason);
-  gracefulShutdown('UNHANDLED_REJECTION');
-});
+// 7. Solo para propósitos de prueba
+module.exports = server;

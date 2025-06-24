@@ -1,82 +1,13 @@
 <template>
   <div class="register-container">
     <div class="register-card">
+      <div class="logo-container">
+        <div class="app-logo">⚡</div>
+        <h1 class="app-name">Sistema de Simulación</h1>
+      </div>
+      
       <h2>Crear Cuenta</h2>
       <form @submit.prevent="handleSubmit" class="register-form">
-
-        <!-- Username -->
-        <div class="form-group">
-          <label for="username">Nombre de Usuario</label>
-          <input 
-            type="text" 
-            id="username"
-            v-model.trim="form.username"
-            :class="{ 'error': errors.username }"
-            placeholder="Ingresa tu nombre de usuario"
-            :disabled="isSubmitting"
-            required
-          />
-          <span v-if="errors.username" class="error-message">{{ errors.username }}</span>
-        </div>
-
-        <!-- Primer Nombre -->
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input 
-            type="text" 
-            id="nombre"
-            v-model.trim="form.nombre"
-            :class="{ 'error': errors.nombre }"
-            placeholder="Tu primer nombre"
-            :disabled="isSubmitting"
-            required
-          />
-          <span v-if="errors.nombre" class="error-message">{{ errors.nombre }}</span>
-        </div>
-
-        <!-- Segundo Nombre -->
-        <div class="form-group">
-          <label for="segundoNombre">Segundo Nombre <span class="optional">(opcional)</span></label>
-          <input 
-            type="text" 
-            id="segundoNombre"
-            v-model.trim="form.segundoNombre"
-            :class="{ 'error': errors.segundoNombre }"
-            placeholder="Tu segundo nombre"
-            :disabled="isSubmitting"
-          />
-          <span v-if="errors.segundoNombre" class="error-message">{{ errors.segundoNombre }}</span>
-        </div>
-
-        <!-- Apellido Paterno -->
-        <div class="form-group">
-          <label for="apellidoPaterno">Apellido Paterno</label>
-          <input 
-            type="text" 
-            id="apellidoPaterno"
-            v-model.trim="form.apellidoPaterno"
-            :class="{ 'error': errors.apellidoPaterno }"
-            placeholder="Tu apellido paterno"
-            :disabled="isSubmitting"
-            required
-          />
-          <span v-if="errors.apellidoPaterno" class="error-message">{{ errors.apellidoPaterno }}</span>
-        </div>
-
-        <!-- Apellido Materno -->
-        <div class="form-group">
-          <label for="apellidoMaterno">Apellido Materno</label>
-          <input 
-            type="text" 
-            id="apellidoMaterno"
-            v-model.trim="form.apellidoMaterno"
-            :class="{ 'error': errors.apellidoMaterno }"
-            placeholder="Tu apellido materno"
-            :disabled="isSubmitting"
-            required
-          />
-          <span v-if="errors.apellidoMaterno" class="error-message">{{ errors.apellidoMaterno }}</span>
-        </div>
 
         <!-- Email -->
         <div class="form-group">
@@ -86,11 +17,28 @@
             id="email"
             v-model.trim="form.email"
             :class="{ 'error': errors.email }"
-            placeholder="ejemplo@correo.com"
+            placeholder="tu-email@ejemplo.com"
             :disabled="isSubmitting"
             required
+            maxlength="100"
           />
           <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username">Nombre de Usuario</label>
+          <input 
+            type="text" 
+            id="username"
+            v-model.trim="form.username"
+            :class="{ 'error': errors.username }"
+            placeholder="Nombre de usuario"
+            :disabled="isSubmitting"
+            required
+            maxlength="30"
+          />
+          <span v-if="errors.username" class="error-message">{{ errors.username }}</span>
         </div>
 
         <!-- Password -->
@@ -104,28 +52,18 @@
             placeholder="Mínimo 8 caracteres"
             :disabled="isSubmitting"
             required
+            maxlength="100"
           />
           <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
         </div>
 
-        <!-- Confirm Password -->
-        <div class="form-group">
-          <label for="confirmPassword">Confirmar Contraseña</label>
-          <input 
-            type="password" 
-            id="confirmPassword"
-            v-model="form.confirmPassword"
-            :class="{ 'error': errors.confirmPassword }"
-            placeholder="Repite tu contraseña"
-            :disabled="isSubmitting"
-            required
-          />
-          <span v-if="errors.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span>
-        </div>
-
         <!-- Mensajes -->
-        <div v-if="generalError" class="general-error">{{ generalError }}</div>
-        <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+        <div v-if="generalError" class="message-box error-message">
+          <i class="icon">⚠️</i> {{ generalError }}
+        </div>
+        <div v-if="successMessage" class="message-box success-message">
+          <i class="icon">✅</i> {{ successMessage }}
+        </div>
 
         <!-- Botón -->
         <button type="submit" class="register-btn" :disabled="isSubmitting">
@@ -150,19 +88,14 @@ export default {
   data() {
     return {
       form: {
-        username: '',
-        nombre: '',
-        segundoNombre: '',
-        apellidoPaterno: '',
-        apellidoMaterno: '',
         email: '',
+        username: '',
         password: '',
-        confirmPassword: ''
       },
       errors: {},
       isSubmitting: false,
       generalError: '',
-      successMessage: ''
+      successMessage: '',
     };
   },
   methods: {
@@ -173,41 +106,30 @@ export default {
     },
 
     validateForm() {
-      const letras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       this.errors = {};
 
-      // Validaciones básicas
-      if (!this.form.username || this.form.username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(this.form.username)) {
-        this.errors.username = 'El nombre debe tener al menos 3 caracteres y solo contener letras, números y guiones bajos';
+      // Validación de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.form.email) {
+        this.errors.email = 'El correo electrónico es requerido';
+      } else if (!emailRegex.test(this.form.email)) {
+        this.errors.email = 'Por favor ingresa un correo electrónico válido';
       }
 
-      if (!this.form.nombre || !letras.test(this.form.nombre)) {
-        this.errors.nombre = 'El nombre es requerido y solo puede contener letras';
+      // Validación de username
+      if (!this.form.username) {
+        this.errors.username = 'El nombre de usuario es requerido';
+      } else if (this.form.username.length < 3) {
+        this.errors.username = 'El nombre de usuario debe tener al menos 3 caracteres';
+      } else if (this.form.username.length > 30) {
+        this.errors.username = 'El nombre de usuario no puede exceder los 30 caracteres';
       }
 
-      if (this.form.segundoNombre && !letras.test(this.form.segundoNombre)) {
-        this.errors.segundoNombre = 'Solo letras permitidas';
-      }
-
-      if (!this.form.apellidoPaterno || !letras.test(this.form.apellidoPaterno)) {
-        this.errors.apellidoPaterno = 'El apellido paterno es requerido y solo puede contener letras';
-      }
-
-      if (!this.form.apellidoMaterno || !letras.test(this.form.apellidoMaterno)) {
-        this.errors.apellidoMaterno = 'El apellido materno es requerido y solo puede contener letras';
-      }
-
-      if (!this.form.email || !emailRegex.test(this.form.email)) {
-        this.errors.email = 'Correo requerido y debe tener formato válido';
-      }
-
-      if (!this.form.password || this.form.password.length < 8 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(this.form.password)) {
-        this.errors.password = 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, minúscula y número';
-      }
-
-      if (!this.form.confirmPassword || this.form.password !== this.form.confirmPassword) {
-        this.errors.confirmPassword = 'Las contraseñas no coinciden';
+      // Validación de password
+      if (!this.form.password) {
+        this.errors.password = 'La contraseña es requerida';
+      } else if (this.form.password.length < 8) {
+        this.errors.password = 'La contraseña debe tener al menos 8 caracteres';
       }
 
       return Object.keys(this.errors).length === 0;
@@ -222,53 +144,229 @@ export default {
 
       try {
         const userData = {
+          email: this.form.email.trim(),
           username: this.form.username.trim(),
-          nombre: this.form.nombre.trim(),
-          segundo_nombre: this.form.segundoNombre?.trim() || null,
-          apellido_paterno: this.form.apellidoPaterno.trim(),
-          apellido_materno: this.form.apellidoMaterno.trim(),
-          correo: this.form.email.trim().toLowerCase(),
-          contrasena: this.form.password
+          password: this.form.password,
         };
 
-        const res = await axios.post('/api/register', userData);
+        // Usar la URL base de las variables de entorno
+        const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3001';
+        const response = await axios.post(`${API_URL}/api/users/register`, userData);
 
-        if (res.status >= 200 && res.status < 300 && res.data.message?.includes('éxito')) {
-          this.successMessage = 'Usuario registrado con éxito. ¡Ya puedes iniciar sesión!';
+        if (response.data.message) {
+          this.successMessage = response.data.message;
+          
+          // Limpiar formulario
           this.form = {
-            username: '',
-            nombre: '',
-            segundoNombre: '',
-            apellidoPaterno: '',
-            apellidoMaterno: '',
             email: '',
+            username: '',
             password: '',
-            confirmPassword: ''
           };
-          setTimeout(() => this.$router.push('/login'), 2000);
-        } else {
-          this.generalError = res.data.message || 'Ocurrió un error al registrar.';
+
+          // Redirigir después de 2 segundos
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 2000);
         }
-      } catch (err) {
-        console.error('Error en registro:', err);
-        if (err.response) {
-          const status = err.response.status;
-          this.generalError =
-            status === 409 ? 'El usuario o correo ya existe.' :
-            status === 400 ? 'Datos inválidos. Verifica la información.' :
-            err.response.data?.message || 'Error del servidor.';
-        } else if (err.request) {
-          this.generalError = 'Error de conexión. Verifica tu internet.';
-        } else {
-          this.generalError = 'Error desconocido. Intenta nuevamente.';
-        }
+      } catch (error) {
+        this.handleError(error);
       } finally {
         this.isSubmitting = false;
+      }
+    },
+    
+    handleError(error) {
+      console.error('Error en registro:', error);
+
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.error || error.response.data?.message;
+
+        switch (status) {
+          case 400:
+            this.generalError = message || 'Datos inválidos. Verifica la información.';
+            break;
+          case 409:
+            this.generalError = 'El correo o nombre de usuario ya están registrados';
+            break;
+          default:
+            this.generalError = message || 'Error del servidor. Intenta más tarde.';
+        }
+      } else if (error.request) {
+        this.generalError = 'Error de conexión. Verifica tu internet.';
+      } else {
+        this.generalError = 'Error desconocido. Intenta nuevamente.';
       }
     }
   }
 };
 </script>
 
+<style scoped>
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+  padding: 20px;
+}
 
-<style scoped src="./register.css"></style>
+.register-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  transition: all 0.3s ease;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.app-logo {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.app-name {
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+h2 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.register-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+input.error {
+  border-color: #e74c3c;
+}
+
+.error-message {
+  display: block;
+  margin-top: 5px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(to right, #3498db, #2c3e50);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.register-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+.login-link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.message-box {
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.error-message {
+  background-color: #ffecec;
+  color: #e74c3c;
+  border: 1px solid #fadbd8;
+}
+
+.success-message {
+  background-color: #e8f7f0;
+  color: #27ae60;
+  border: 1px solid #d4efdf;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+@media (max-width: 500px) {
+  .register-card {
+    padding: 25px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  input, .register-btn {
+    padding: 12px;
+  }
+}
+</style>

@@ -2,7 +2,10 @@
   <div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
+        <!-- Marca -->
         <router-link class="navbar-brand" to="/">Monitor</router-link>
+
+        <!-- Botón toggler para menú responsive -->
         <button
           class="navbar-toggler"
           type="button"
@@ -14,12 +17,15 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Menú colapsable -->
         <div class="collapse navbar-collapse" id="navbarScroll">
           <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
             <li class="nav-item">
               <router-link
                 class="nav-link"
                 active-class="active"
+                exact
                 to="/menu/dispositivos"
               >
                 <i class="bi bi-hdd-stack"></i> Dispositivos
@@ -29,6 +35,7 @@
               <router-link
                 class="nav-link"
                 active-class="active"
+                exact
                 to="/menu/dispositivos/agregar"
               >
                 <i class="bi bi-plus-circle"></i> Agregar Dispositivo
@@ -41,10 +48,14 @@
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                id="dropdownMenuLink"
               >
                 <i class="bi bi-link-45deg"></i> Opciones
               </a>
-              <ul class="dropdown-menu">
+              <ul
+                class="dropdown-menu"
+                aria-labelledby="dropdownMenuLink"
+              >
                 <li><a class="dropdown-item" href="#">Opción 1</a></li>
                 <li><a class="dropdown-item" href="#">Opción 2</a></li>
                 <li><hr class="dropdown-divider" /></li>
@@ -55,6 +66,7 @@
               <router-link
                 class="nav-link"
                 active-class="active"
+                exact
                 to="/login"
               >
                 <i class="bi bi-box-arrow-right"></i> Salir
@@ -64,6 +76,8 @@
         </div>
       </div>
     </nav>
+
+    <!-- Contenedor principal para el contenido de las rutas hijas -->
     <div class="col py-0 vh-100 overflow-auto">
       <router-view />
     </div>
@@ -73,13 +87,9 @@
 <script>
 export default {
   name: 'Menu',
-  data() {
-    return {};
-  },
-  methods: {},
 };
 </script>
 
 <style scoped>
-@import './Menu.css'; /* Importa el archivo CSS externo */
+@import './Menu.css';
 </style>

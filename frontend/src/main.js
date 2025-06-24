@@ -1,31 +1,46 @@
-// Importa Vue y componentes principales
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import store from './store' // Importa el store de Vuex
+import axios from 'axios'
+import { checkAuth, setAuthToken } from './utils/auth'
 
-// Bootstrap (asegúrate que está instalado)
+// Estilos globales necesarios
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import 'bootstrap'           // importa JS de Bootstrap (que depende de popper)
-import '@popperjs/core'      // Popper necesario para Bootstrap
 
-// Font Awesome setup
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser, faSignOutAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
+// Configuración base de Axios
+axios.defaults.baseURL = process.env.VUE_APP_API_URL || ''
 
-library.add(faUser, faSignOutAlt, faSpinner)
+// Verifica la autenticación del usuario
+checkAuth()
 
-// Crea la app
+// Crea la aplicación Vue
 const app = createApp(App)
 
-// Usa Vuex store y Vue Router
-app.use(store)
+// Inyecta router y store
 app.use(router)
+app.use(store) // ¡Esta línea es crucial para que Vuex funcione!
 
-// Registra componente globalmente
-app.component('font-awesome-icon', FontAwesomeIcon)
+// Inyecta Axios globalmente
+app.config.globalProperties.$axios = axios
 
-// Monta la app en el div con id 'app'
+// Manejo global de errores
+app.config.errorHandler = (err, vm, info) => {
+  console.error(`Error global: ${err.toString()}\nInfo: ${info}`)
+
+  if (err.response && err.response.status === 401) {
+    // Token inválido o expirado
+    setAuthToken(null)
+    router.push('/login')
+  }
+}
+
+// Monta la aplicación
 app.mount('#app')
+
+// Solo en desarrollo: expone el router en consola para depuración
+if (process.env.NODE_ENV === 'development') {
+  window.$router = router
+  window.$store = store // También expone el store para depuración
+}
