@@ -6,8 +6,8 @@
         <hr />
       </div>
 
-      <div class="row p-1">
-        <form @submit.prevent="guardar">
+      <form @submit.prevent="guardar">
+        <div class="row p-1">
           <div class="form-floating p-1">
             <input
               type="text"
@@ -43,28 +43,28 @@
             />
             <label for="ubicacion" class="form-text text-muted">Ubicación</label>
           </div>
-        </form>
-      </div>
+        </div>
 
-      <div class="row p-2">
-        <div class="col-12">
-          <div class="alert alert-danger" role="alert" v-if="alerta.mensaje">
-            <strong>¡Error!</strong>
-            <p v-html="alerta.mensaje"></p>
+        <div class="row p-2">
+          <div class="col-12">
+            <div class="alert alert-danger" role="alert" v-if="alerta.mensaje">
+              <strong>¡Error!</strong>
+              <p v-html="alerta.mensaje"></p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="row p-2">
-        <div class="col">
-          <button class="btn btn-outline-success" type="button" @click="guardar">
-            <i class="bi bi-box-arrow-in-right"></i> Guardar
-          </button>
-          <button class="btn btn-outline-secondary" type="button" @click="limpiar">
-            <i class="bi bi-box-arrow-in-right"></i> Cancelar
-          </button>
+        <div class="row p-2">
+          <div class="col">
+            <button class="btn btn-outline-success" type="submit">
+              <i class="bi bi-box-arrow-in-right"></i> Guardar
+            </button>
+            <button class="btn btn-outline-secondary" type="button" @click="limpiar">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -76,7 +76,15 @@ export default {
   name: 'RegistroDispositivo',
   data() {
     return {
-      dispositivo: {
+      dispositivo: this.getDispositivoInicial(),
+      alerta: {
+        mensaje: ''
+      }
+    }
+  },
+  methods: {
+    getDispositivoInicial() {
+      return {
         identifica: {
           identificador: 0,
           nombre: '',
@@ -98,55 +106,30 @@ export default {
           fechaRegistro: new Date().toUTCString()
         },
         estado: 1
-      },
-      alerta: {
-        mensaje: ''
       }
-    }
-  },
-methods: {
-  async guardar() {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL
-      if (!apiUrl) throw new Error('API URL no configurada')
-
-      const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
-      console.log('✅ Dispositivo creado:', response.data)
-      this.limpiar()
-    } catch (error) {
-      console.error('❌ Error al guardar:', error.response?.data || error)
-      this.alerta.mensaje =
-        error.response?.data?.error || 'No se pudo guardar el dispositivo. Intente más tarde.'
-    }
-  },
-limpiar() {
-  this.dispositivo = {
-    identifica: {
-      identificador: 0,
-      nombre: '',
-      ubicacion: '',
-      coordenadas: '19.7060° N, 101.1950° W',
-      potencia: { nominal: 7.2, minimo: 6.2, maximo: 8.6, um: 'KW' },
-      voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
-      corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
-      caudal: { nominal: 1, minimo: 0.1, maximo: 1.2, um: 'm3/minuto' },
-      fechaRegistro: new Date().toUTCString()
     },
-    opera: {
-      potencia: { valor: 7.2, idEstatus: 1 },
-      voltaje: { valor: 240, idEstatus: 1 },
-      corriente: { valor: 30, idEstatus: 1 },
-      caudal: { valor: 1, idEstatus: 1 },
-      idEstatus: 1,
-      estatus: 'Operacion Normal',
-      fechaRegistro: new Date().toUTCString()
-    },
-    estado: 1
-  }
-  this.alerta.mensaje = ''
-  this.$router.push('/menu/dispositivos')
-}
+    async guardar() {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL
+        if (!apiUrl) throw new Error('API URL no configurada')
 
+        const response = await axios.post(`${apiUrl}/dispositivos`, this.dispositivo)
+        console.log('✅ Dispositivo creado:', response.data)
+
+        this.limpiar()
+      } catch (error) {
+        console.error('❌ Error al guardar:', error)
+        this.alerta.mensaje =
+          error.response?.data?.error ||
+          error.message ||
+          'No se pudo guardar el dispositivo. Intente más tarde.'
+      }
+    },
+    limpiar() {
+      this.dispositivo = this.getDispositivoInicial()
+      this.alerta.mensaje = ''
+      this.$router.push('/menu/dispositivos')
+    }
   }
 }
 </script>
