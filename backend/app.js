@@ -85,6 +85,86 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Ruta del menú
+app.get('/menu', (req, res) => {
+  res.json({
+    message: 'Menú de la API',
+    version: '1.0.0',
+    sections: [
+      {
+        title: 'Dispositivos',
+        description: 'Gestión de dispositivos IoT',
+        items: [
+          {
+            name: 'Listar todos los dispositivos',
+            method: 'GET',
+            endpoint: '/api/dispositivos',
+            description: 'Obtiene la lista completa de dispositivos'
+          },
+          {
+            name: 'Crear nuevo dispositivo',
+            method: 'POST',
+            endpoint: '/api/dispositivos',
+            description: 'Crea un nuevo dispositivo'
+          },
+          {
+            name: 'Obtener dispositivo por ID',
+            method: 'GET',
+            endpoint: '/api/dispositivos/:id',
+            description: 'Obtiene un dispositivo específico'
+          },
+          {
+            name: 'Actualizar dispositivo',
+            method: 'PUT',
+            endpoint: '/api/dispositivos/:id',
+            description: 'Actualiza un dispositivo existente'
+          },
+          {
+            name: 'Eliminar dispositivo',
+            method: 'DELETE',
+            endpoint: '/api/dispositivos/:id',
+            description: 'Elimina un dispositivo'
+          }
+        ]
+      },
+      {
+        title: 'Sistema',
+        description: 'Endpoints del sistema',
+        items: [
+          {
+            name: 'Health Check',
+            method: 'GET',
+            endpoint: '/health',
+            description: 'Verifica el estado del servidor'
+          },
+          {
+            name: 'Información de la API',
+            method: 'GET',
+            endpoint: '/',
+            description: 'Información general de la API'
+          }
+        ]
+      }
+    ]
+  });
+});
+
+// Ruta alternativa para el menú en la API
+app.get('/api/menu', (req, res) => {
+  res.json({
+    message: 'Menú de endpoints de la API',
+    endpoints: {
+      dispositivos: '/api/dispositivos',
+      health: '/health',
+      menu: '/menu'
+    },
+    documentation: {
+      swagger: '/api/docs', // Para futuro uso
+      postman: '/api/postman' // Para futuro uso
+    }
+  });
+});
+
 // Rutas principales
 const dispositivosRoutes = require('./routes/dispositivos');
 app.use('/api/dispositivos', dispositivosRoutes);
@@ -97,6 +177,8 @@ app.get('/', (req, res) => {
     status: 'active',
     endpoints: {
       health: '/health',
+      menu: '/menu',
+      api_menu: '/api/menu',
       dispositivos: '/api/dispositivos'
     }
   });
@@ -114,9 +196,13 @@ app.use('*', (req, res) => {
     available_endpoints: [
       'GET /',
       'GET /health',
+      'GET /menu',
+      'GET /api/menu',
       'GET /api/dispositivos',
       'POST /api/dispositivos',
-      'GET /api/dispositivos/:id'
+      'GET /api/dispositivos/:id',
+      'PUT /api/dispositivos/:id',
+      'DELETE /api/dispositivos/:id'
     ]
   });
 });
@@ -158,6 +244,7 @@ const server = app.listen(PORT, () => {
 🌍 Entorno: ${process.env.NODE_ENV}
 🔗 URL: http://localhost:${PORT}
 📊 Health Check: http://localhost:${PORT}/health
+🍽️  Menú: http://localhost:${PORT}/menu
 🔌 API Dispositivos: http://localhost:${PORT}/api/dispositivos
   `);
 });
