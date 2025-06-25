@@ -1,32 +1,39 @@
-// ecosystem.config.js
 module.exports = {
   apps: [
     {
       name: 'simulacion-api',
-      script: './daemon.js',
-      instances: 1,
+      script: 'app.js',
+      instances: 1, // o 'max' para usar todos los cores disponibles
+      exec_mode: 'cluster',
       autorestart: true,
-      watch: false,
+      watch: false, // cambiar a true solo en desarrollo
       max_memory_restart: '1G',
-      listen_timeout: 3000,
-      kill_timeout: 5000,
       env: {
         NODE_ENV: 'production',
-        PORT: 3001, // ← Cambiar a 3001
-        DB_HOST: 'a2100679b.c3y80kgqitws.us-east-2.rds.amazonaws.com',
-        DB_USER: 'postgres',
-        DB_PASSWORD: 'postgres',
-        DB_NAME: 'simulacion',
-        DB_PORT: '5432',
-        DB_SSL: 'true',
-        JWT_SECRET: 'tu_super_secreto',
-        FRONTEND_ORIGIN: 'https://demodba2.netlify.app/'
+        PORT: 3001
       },
-      error_file: './logs/err.log',
-      out_file: './logs/out.log',
+      env_development: {
+        NODE_ENV: 'development',
+        PORT: 3001,
+        watch: true,
+        ignore_watch: ['node_modules', 'logs']
+      },
+      // Logging
       log_file: './logs/combined.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      time: true
+      out_file: './logs/out.log',
+      error_file: './logs/error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      
+      // Reinicio automático en caso de errores
+      min_uptime: '10s',
+      max_restarts: 10,
+      
+      // Configuraciones adicionales
+      kill_timeout: 3000,
+      listen_timeout: 8000,
+      
+      // Variables de entorno (opcional, PM2 leerá el .env automáticamente)
+      env_file: '.env'
     }
   ]
 };
