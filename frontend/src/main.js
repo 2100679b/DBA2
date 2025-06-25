@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 // Configuración base de Axios
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || ''
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || ''
 
 // Verifica la autenticación del usuario
 checkAuth()
