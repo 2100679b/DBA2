@@ -12,15 +12,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-  },
-  build: {
-    // No excludes ni external para vue, para que se empaquete correctamente
-    rollupOptions: {
-      // external: [], // NO marques vue como externo aquí
-    },
-    target: 'esnext',
-    sourcemap: false,
   },
 })
