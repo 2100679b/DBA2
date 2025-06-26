@@ -1,0 +1,87 @@
+/* Estilos para la barra de navegación */
+.navbar {
+  background-color: #3f51b5 !important; /* Azul profundo para el fondo de la barra de navegación */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+}
+
+.navbar-brand {
+  color: #ffeb3b !important; /* Amarillo brillante para el nombre de la marca */
+  font-weight: bold;
+  font-size: 1.8rem; /* Tamaño de fuente más grande */
+  transition: color 0.3s ease-in-out; /* Transición suave al pasar el ratón */
+}
+
+.navbar-brand:hover {
+  color: #ffe082 !important; /* Un amarillo más claro al pasar el ratón */
+}
+
+/* Estilos para los enlaces de navegación */
+.nav-link {
+  color: #e0e0e0 !important; /* Gris claro para los enlaces normales */
+  font-weight: 500;
+  transition: all 0.3s ease-in-out; /* Transición suave para todos los cambios */
+}
+
+.nav-link:hover {
+  color: #ffffff !important; /* Blanco puro al pasar el ratón */
+  transform: translateY(-2px); /* Pequeño efecto de elevación */
+}
+
+/* Estilos para el enlace activo (la página actual) */
+.nav-link.active {
+  color: #ffeb3b !important; /* Amarillo brillante para el enlace activo */
+  font-weight: bold;
+  border-bottom: 3px solid #ffeb3b; /* Borde inferior para resaltar */
+  padding-bottom: 5px; /* Pequeño espacio para el borde */
+}
+
+/* Estilos para los íconos */
+.nav-item i {
+  margin-right: 8px; /* Más espacio a la derecha de los íconos */
+  font-size: 1.1rem; /* Íconos un poco más grandes */
+  color: #bdbdbd; /* Color gris para los íconos por defecto */
+}
+
+.nav-link:hover i {
+  color: #ffffff; /* Íconos blancos al pasar el ratón */
+}
+
+.nav-link.active i {
+  color: #ffeb3b; /* Íconos amarillos para el enlace activo */
+}
+
+/* Estilos para el botón del "toggler" (menú hamburguesa en móviles) */
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3) !important; /* Borde del toggler más visible */
+}
+
+.navbar-toggler-icon {
+  filter: invert(1); /* Invierte el color del ícono del toggler para que se vea blanco */
+}
+
+/* Estilos para el dropdown menu */
+.dropdown-menu {
+  background-color: #f8f9fa; /* Fondo claro para el dropdown */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  color: #3f51b5; /* Azul profundo para los items del dropdown */
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #e0e0e0; /* Fondo gris claro al pasar el ratón */
+  color: #212121; /* Texto oscuro al pasar el ratón */
+}
+
+.dropdown-divider {
+  border-top: 1px solid #e0e0e0; /* Separador sutil */
+  margin: 0.5rem 0;
+}
