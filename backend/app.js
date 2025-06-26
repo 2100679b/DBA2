@@ -1,25 +1,17 @@
-require('dotenv').config();
 const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-
 const app = express();
 
-// Middlewares
-app.use(express.json());
-app.use(morgan('dev'));
-app.use(cors({
-  origin: '*', // Puedes cambiar esto por Netlify: https://tuapp.netlify.app
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
+const dispositivosRoutes = require('./routes/dispositivos'); // Ejemplo
 
-// Rutas
-const dispositivosRoutes = require('./routes/dispositivos');
+app.use(express.json());
+
+// Esta línea define que tus rutas empiezan en /api/dispositivos
 app.use('/api/dispositivos', dispositivosRoutes);
 
-// Servidor
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en puerto ${PORT}`);
+// Endpoint para verificar que el backend está vivo
+app.get('/health', (req, res) => res.send('OK'));
+
+app.listen(3001, () => {
+  console.log('🚀 Backend en puerto 3001');
 });
+s
