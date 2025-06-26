@@ -14,4 +14,9 @@ app.get('/health', (req, res) => res.send('OK'));
 app.listen(3001, () => {
   console.log('🚀 Backend en puerto 3001');
 });
-s
+app.get('/api', (req, res) => {
+  res.json({ mensaje: 'API simulacion funcionando' });
+});
+app.get('/', (req, res) => {
+  res.send('Bienvenido a la API de Simulación');
+});
