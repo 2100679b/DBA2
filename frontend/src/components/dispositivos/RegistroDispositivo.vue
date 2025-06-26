@@ -5,58 +5,58 @@
         <h4 class="card-title">Registro Dispositivo</h4>
         <hr />
       </div>
-      <div class="row p-1">
-        <form @submit.prevent="guardar">
-          <div class="form-floating p-1">
-            <input
-              type="text"
-              id="nombreDisp"
-              class="form-control"
-              v-model="dispositivo.nombre"
-              placeholder="Nombre del dispositivo"
-              required
-            />
-            <label for="nombreDisp">Nombre del dispositivo</label>
-          </div>
-          <div class="form-floating p-1">
-            <input
-              type="text"
-              id="ubicacion"
-              class="form-control"
-              v-model="dispositivo.ubicacion"
-              placeholder="Ubicación"
-              required
-            />
-            <label for="ubicacion">Ubicación</label>
-          </div>
-        </form>
-      </div>
 
-      <div class="row p-2" v-if="alerta.mensaje">
-        <div class="col">
-          <div class="alert alert-danger" role="alert">
-            <strong>¡Error!</strong>
-            <p v-html="alerta.mensaje"></p>
+      <form @submit.prevent="guardar">
+        <div class="form-floating p-1">
+          <input
+            type="text"
+            id="nombreDisp"
+            class="form-control"
+            v-model="dispositivo.nombre"
+            placeholder="Nombre del dispositivo"
+            required
+          />
+          <label for="nombreDisp">Nombre del dispositivo</label>
+        </div>
+
+        <div class="form-floating p-1">
+          <input
+            type="text"
+            id="ubicacion"
+            class="form-control"
+            v-model="dispositivo.ubicacion"
+            placeholder="Ubicación"
+            required
+          />
+          <label for="ubicacion">Ubicación</label>
+        </div>
+
+        <div class="row p-2" v-if="alerta.mensaje">
+          <div class="col">
+            <div class="alert alert-danger" role="alert">
+              <strong>¡Error!</strong>
+              <p v-html="alerta.mensaje"></p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="row p-2">
-        <div class="col">
-          <button class="btn btn-outline-success" type="button" @click="guardar">
-            <i class="bi bi-box-arrow-in-right"></i> Guardar
-          </button>
-          <button class="btn btn-outline-secondary" type="button" @click="limpiar">
-            <i class="bi bi-x-circle"></i> Cancelar
-          </button>
+        <div class="row p-2">
+          <div class="col">
+            <button class="btn btn-outline-success" type="submit">
+              <i class="bi bi-box-arrow-in-right"></i> Guardar
+            </button>
+            <button class="btn btn-outline-secondary" type="button" @click="limpiar">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script>
-import axios from '@/api' // asegúrate de tener src/api.js configurado con axios
+import axios from '@/api' // Asegúrate de tener src/api.js
 
 export default {
   name: 'RegistroDispositivo',
@@ -81,8 +81,8 @@ export default {
   methods: {
     async guardar() {
       try {
-        const res = await axios.post('/api/dispositivos', this.dispositivo);
-        alert('✅ Dispositivo guardado: ' + res.data.dispositivo.nombre);
+        const res = await axios.post('/dispositivos', this.dispositivo);
+        alert(`✅ Dispositivo guardado: ${res.data.nombre}`);
         this.limpiar();
       } catch (error) {
         console.error(error);
