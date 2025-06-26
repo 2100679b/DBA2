@@ -1,6 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
+// Vista de Login
 import ViewLogin from '@/components/sesion/ViewLogin.vue'
+
+// Vista de Registro de Usuario
+import ViewRegistroUsuario from '@/components/sesion/ViewRegistroUsuario.vue'
+
+// Vista principal con menú
 import ViewMenu from '@/components/principal/ViewMenu.vue'
+
+// Vistas de dispositivos
 import RegistroDispositivo from '@/components/dispositivos/RegistroDispositivo.vue'
 import ViewDispositivos from '@/components/dispositivos/ViewDispositivos.vue'
 
@@ -18,24 +27,31 @@ const router = createRouter({
       component: ViewLogin,
     },
     {
+      path: '/registro',
+      name: 'registro',
+      component: ViewRegistroUsuario,
+    },
+    {
       path: '/menu',
       name: 'menu',
       component: ViewMenu,
       children: [
-        { path: '/menu/dispositivos', component: ViewDispositivos },
-        { path: '/menu/dispositivos/agregar', component: RegistroDispositivo }
-
-      ]
+        {
+          path: 'dispositivos',
+          name: 'dispositivos',
+          component: ViewDispositivos,
+        },
+        {
+          path: 'dispositivos/agregar',
+          name: 'dispositivos-agregar',
+          component: RegistroDispositivo,
+        },
+      ],
     },
-    {
-      path: '/registro',
-      name: 'registro',
-      component: () => import('../components/sesion/ViewRegistroUsuario.vue'),
-    },
+    // Ruta alternativa fuera del menú si se accede directamente
     {
       path: '/dispositivos',
-      name: 'dispositivo',
-      component: ViewDispositivos
+      redirect: '/menu/dispositivos',
     },
   ],
 })
