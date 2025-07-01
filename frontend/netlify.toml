@@ -1,6 +1,6 @@
 [build]
-  base = "frontend"
-  publish = "dist"
+  base = "frontend"  # Especifica que todo se ejecuta desde esta carpeta
+  publish = "dist"   # Directorio de compilación dentro de frontend
   command = "npm run build"
 
 [[redirects]]
@@ -10,9 +10,15 @@
   force = true
   headers = {Access-Control-Allow-Origin = "*"}
 
-# Redirección HTTPS universal
+# Redirección HTTPS obligatoria
 [[redirects]]
   from = "http://demodba2.netlify.app/*"
   to = "https://demodba2.netlify.app/:splat"
   status = 301
   force = true
+
+# Regla para Single Page Application
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
