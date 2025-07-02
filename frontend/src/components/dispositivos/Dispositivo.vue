@@ -1,7 +1,6 @@
 <template>
 <div class="col">
     <div class="card">
-        
         <div class="card-body">
             <h5 class="card-title">{{dispositivo.identifica.nombre}}</h5>
             <p class="card-text">{{ dispositivo.identifica.ubicacion }}, {{ dispositivo.identifica.coordenadas }}.</p>
@@ -40,11 +39,10 @@
                         <th colspan="5" :class="{'text-success':(dispositivo.opera.idEstatus===1), 'text-warning':(dispositivo.opera.idEstatus===2), 'text-danger':(dispositivo.opera.idEstatus===3)}">Estatus: {{ dispositivo.opera.estatus }}</th>
                     </tr>
                 </tfoot>
-
             </table>
         </div>
         <div class="card-footer">
-            <small class="text-body-secondary">{{dispositivo.opera.fechaRegistro}}</small>
+            <small class="text-body-secondary">{{formatDate(dispositivo.opera.fechaRegistro)}}</small>
             <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#detalleDispositivo" @click="setDispositivo">
             Ver Detalle
             </button>
@@ -52,8 +50,8 @@
     </div>
 </div>
 </template>
+
 <script>
-// 
 export default {
     name: 'Dispositivo',
     props: {
@@ -68,21 +66,22 @@ export default {
     },
     computed: {
         setDispositivo() {
-            this.$emit('setDispositivo',this.dispositivo)
+            this.$emit('setDispositivo', this.dispositivo)
         }
-        // Retorna {1 -> 'Operación Normal', 2 -> 'Alerta', 3 -> 'Problemas'}
-        /*
-        estatusCaudal() {
-            let reply
-            if(this.opera.caudal < this.identifica.caudal.minimo || this.opera.caudal > this.identifica.caudal.maximo)
-                reply = 3
-            else if(this.opera.caudal < (this.identifica.caudal.minimo + 3) || this.opera.caudal > (this.identifica.caudal.maximo-3))
-                reply = 2
-            else 
-                reply = 1
-            return reply
+    },
+    methods: {
+        formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleString('es-MX', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
         }
-        */
     }
 }
 </script>
