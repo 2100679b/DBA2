@@ -91,7 +91,7 @@ export default  {
             exito: ''
         },
         guardando: false,
-        apiUrl: 'http://localhost:3000/api'
+        apiUrl: 'http://18.119.167.171:3001/api'
         };
     },
     computed: {
