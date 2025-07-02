@@ -56,63 +56,55 @@
   </div>
 </template>
 
-<script>
-import axios from '@/api'; // Asegúrate de que la ruta a src/api.js sea correcta
-import { useToast } from 'vue-toastification'; // Para notificaciones modernas (opcional)
+<script setup>
+import { ref } from 'vue';
+import axios from '@/api'; // Verifica la ruta
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: 'RegistroDispositivo',
-  data() {
-    return {
-      dispositivo: {
-        nombre: '',
-        ubicacion: '',
-        coordenadas: '19.7060° N, 101.1950° W',
-        potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
-        voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
-        corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
-        caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
-        estado: 1,
-        registro_usuario: 0
-      },
-      alerta: {
-        mensaje: ''
-      }
-    };
-  },
-  methods: {
-    async guardar() {
-      try {
-        const res = await axios.post('/dispositivos', this.dispositivo);
-        this.$toast.success(`✅ Dispositivo guardado: ${res.data.nombre}`);
-        this.limpiar();
-      } catch (error) {
-        console.error(error);
-        this.alerta.mensaje =
-          error.response?.data?.error || 'Error al guardar el dispositivo.';
-      }
-    },
-    limpiar() {
-      this.dispositivo = {
-        nombre: '',
-        ubicacion: '',
-        coordenadas: '19.7060° N, 101.1950° W',
-        potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
-        voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
-        corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
-        caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
-        estado: 1,
-        registro_usuario: 0
-      };
-      this.alerta.mensaje = ''; // Limpiar el mensaje de error
-      this.$router.push('/menu/dispositivos');
-    }
-  },
-  setup() {
-    const toast = useToast(); // Configuración para vue-toastification
-    return { toast };
+const toast = useToast();
+const router = useRouter();
+
+const dispositivo = ref({
+  nombre: '',
+  ubicacion: '',
+  coordenadas: '19.7060° N, 101.1950° W',
+  potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
+  voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
+  corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
+  caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
+  estado: 1,
+  registro_usuario: 0
+});
+
+const alerta = ref({ mensaje: '' });
+
+function limpiar() {
+  dispositivo.value = {
+    nombre: '',
+    ubicacion: '',
+    coordenadas: '19.7060° N, 101.1950° W',
+    potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
+    voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
+    corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
+    caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
+    estado: 1,
+    registro_usuario: 0
+  };
+  alerta.value.mensaje = '';
+  router.push('/menu/dispositivos');
+}
+
+async function guardar() {
+  try {
+    const res = await axios.post('/dispositivos', dispositivo.value);
+    toast.success(`✅ Dispositivo guardado: ${res.data.nombre}`);
+    limpiar();
+  } catch (error) {
+    console.error(error);
+    alerta.value.mensaje = error.response?.data?.error || 'Error al guardar el dispositivo.';
   }
-};
+}
 </script>
 
 <style scoped>
