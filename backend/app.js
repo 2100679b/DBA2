@@ -136,14 +136,76 @@ app.get('/api/dispositivos/:id', async (req, res) => {
   }
 });
 
-// POST - Crear un nuevo dispositivo
+// POST - Crear un nuevo dispositivo - CORREGIDO PARA ACEPTAR AMBOS FORMATOS
 app.post('/api/dispositivos', async (req, res) => {
   try {
-    const { identifica } = req.body;
+    console.log('Datos recibidos:', req.body);
     
-    if (!identifica || !identifica.nombre || !identifica.ubicacion) {
-      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    let datosDispositivo;
+    
+    // Verificar si los datos vienen en formato directo (como en tu error)
+    if (req.body.nombre && req.body.ubicacion) {
+      datosDispositivo = {
+        nombre: req.body.nombre,
+        ubicacion: req.body.ubicacion,
+        coordenadas: req.body.coordenadas,
+        potencia: req.body.potencia,
+        voltaje: req.body.voltaje,
+        corriente: req.body.corriente,
+        caudal: req.body.caudal
+      };
+    } 
+    // O si vienen en formato con estructura 'identifica'
+    else if (req.body.identifica) {
+      const { identifica } = req.body;
+      datosDispositivo = {
+        nombre: identifica.nombre,
+        ubicacion: identifica.ubicacion,
+        coordenadas: identifica.coordenadas,
+        potencia: identifica.potencia,
+        voltaje: identifica.voltaje,
+        corriente: identifica.corriente,
+        caudal: identifica.caudal
+      };
+    } else {
+      return res.status(400).json({ error: 'Formato de datos incorrecto' });
     }
+    
+    if (!datosDispositivo.nombre || !datosDispositivo.ubicacion) {
+      return res.status(400).json({ error: 'Nombre y ubicación son requeridos' });
+    }
+    
+    // Procesar coordenadas
+    let coordenadasFormateadas;
+    if (datosDispositivo.coordenadas && typeof datosDispositivo.coordenadas === 'object') {
+      coordenadasFormateadas = `${datosDispositivo.coordenadas.lat}° N, ${datosDispositivo.coordenadas.lng}° W`;
+    } else {
+      coordenadasFormateadas = datosDispositivo.coordenadas || '19.7060° N, 101.1950° W';
+    }
+    
+    // Procesar valores de sensores
+    const procesarValor = (valor, defecto) => {
+      if (valor && typeof valor === 'object') {
+        if (valor.valor !== undefined) {
+          // Formato: {valor: 100, unidad: 'W', fecha: '...'}
+          return {
+            nominal: parseFloat(valor.valor),
+            minimo: parseFloat(valor.valor) * 0.8,
+            maximo: parseFloat(valor.valor) * 1.2,
+            um: valor.unidad || defecto.um
+          };
+        } else {
+          // Ya está en formato correcto
+          return valor;
+        }
+      }
+      return defecto;
+    };
+    
+    const potenciaFinal = procesarValor(datosDispositivo.potencia, { nominal: 7.400, minimo: 6.200, maximo: 8.600, um: 'KW' });
+    const voltajeFinal = procesarValor(datosDispositivo.voltaje, { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' });
+    const corrienteFinal = procesarValor(datosDispositivo.corriente, { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' });
+    const caudalFinal = procesarValor(datosDispositivo.caudal, { nominal: 1, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' });
     
     const { rows } = await pool.query(`
       INSERT INTO sistemas.dispositivos 
@@ -151,13 +213,13 @@ app.post('/api/dispositivos', async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
       RETURNING *`,
       [
-        identifica.nombre,
-        identifica.ubicacion,
-        identifica.coordenadas || '19.7060° N, 101.1950° W',
-        JSON.stringify(identifica.potencia || { nominal: 7.400, minimo: 6.200, maximo: 8.600, um: 'KW' }),
-        JSON.stringify(identifica.voltaje || { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' }),
-        JSON.stringify(identifica.corriente || { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' }),
-        JSON.stringify(identifica.caudal || { nominal: 1, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' }),
+        datosDispositivo.nombre,
+        datosDispositivo.ubicacion,
+        coordenadasFormateadas,
+        JSON.stringify(potenciaFinal),
+        JSON.stringify(voltajeFinal),
+        JSON.stringify(corrienteFinal),
+        JSON.stringify(caudalFinal),
         1
       ]
     );
@@ -171,17 +233,17 @@ app.post('/api/dispositivos', async (req, res) => {
         coordenadas: newDevice.coordenadas,
         idestatus: 1,
         estatus: 'Operacion Normal',
-        potencia: newDevice.potencia,
-        voltaje: newDevice.voltaje,
-        corriente: newDevice.corriente,
-        caudal: newDevice.caudal,
+        potencia: typeof newDevice.potencia === 'string' ? JSON.parse(newDevice.potencia) : newDevice.potencia,
+        voltaje: typeof newDevice.voltaje === 'string' ? JSON.parse(newDevice.voltaje) : newDevice.voltaje,
+        corriente: typeof newDevice.corriente === 'string' ? JSON.parse(newDevice.corriente) : newDevice.corriente,
+        caudal: typeof newDevice.caudal === 'string' ? JSON.parse(newDevice.caudal) : newDevice.caudal,
         fechaRegistro: newDevice.registro_fecha
       },
       opera: {
-        potencia: { valor: newDevice.potencia.nominal, idEstatus: 1 },
-        voltaje: { valor: newDevice.voltaje.nominal, idEstatus: 1 },
-        corriente: { valor: newDevice.corriente.nominal, idEstatus: 1 },
-        caudal: { valor: newDevice.caudal.nominal, idEstatus: 1 },
+        potencia: { valor: potenciaFinal.nominal, idEstatus: 1 },
+        voltaje: { valor: voltajeFinal.nominal, idEstatus: 1 },
+        corriente: { valor: corrienteFinal.nominal, idEstatus: 1 },
+        caudal: { valor: caudalFinal.nominal, idEstatus: 1 },
         idEstatus: 1,
         estatus: 'Operacion Normal',
         fechaRegistro: new Date().toISOString()
@@ -189,13 +251,14 @@ app.post('/api/dispositivos', async (req, res) => {
       estado: newDevice.estado
     };
     
+    console.log('Dispositivo creado exitosamente:', dispositivo);
     res.status(201).json(dispositivo);
   } catch (error) {
     console.error('Error al guardar dispositivo:', error);
     if (error.code === '23505') {
       res.status(400).json({ error: 'Ya existe un dispositivo con ese nombre' });
     } else {
-      res.status(500).json({ error: 'Error interno del servidor' });
+      res.status(500).json({ error: 'Error interno del servidor', details: error.message });
     }
   }
 });
