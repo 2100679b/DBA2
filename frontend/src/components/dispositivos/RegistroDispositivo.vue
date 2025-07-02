@@ -31,11 +31,12 @@
           <label for="ubicacion">Ubicación</label>
         </div>
 
+        <!-- Mostrar mensaje de error si existe -->
         <div class="row p-2" v-if="alerta.mensaje">
           <div class="col">
             <div class="alert alert-danger" role="alert">
               <strong>¡Error!</strong>
-              <p v-html="alerta.mensaje"></p>
+              <p>{{ alerta.mensaje }}</p>
             </div>
           </div>
         </div>
@@ -56,7 +57,8 @@
 </template>
 
 <script>
-import axios from '@/api' // Asegúrate de tener src/api.js
+import axios from '@/api'; // Asegúrate de que la ruta a src/api.js sea correcta
+import { useToast } from 'vue-toastification'; // Para notificaciones modernas (opcional)
 
 export default {
   name: 'RegistroDispositivo',
@@ -82,7 +84,7 @@ export default {
     async guardar() {
       try {
         const res = await axios.post('/dispositivos', this.dispositivo);
-        alert(`✅ Dispositivo guardado: ${res.data.nombre}`);
+        this.$toast.success(`✅ Dispositivo guardado: ${res.data.nombre}`);
         this.limpiar();
       } catch (error) {
         console.error(error);
@@ -102,8 +104,13 @@ export default {
         estado: 1,
         registro_usuario: 0
       };
+      this.alerta.mensaje = ''; // Limpiar el mensaje de error
       this.$router.push('/menu/dispositivos');
     }
+  },
+  setup() {
+    const toast = useToast(); // Configuración para vue-toastification
+    return { toast };
   }
 };
 </script>

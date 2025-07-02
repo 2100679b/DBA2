@@ -1,47 +1,42 @@
 import axios from 'axios';
 
-// Determinar si estamos en producción
-const isProduction = import.meta.env.MODE === 'production';
+// Definir la URL base usando variables de entorno o un valor por defecto
+const baseURL = import.meta.env.VITE_API_URL || 'http://18.119.167.171:3001/api';
 
-// Base URL:
-const baseURL = import.meta.env.VITE_API_URL
-  ? import.meta.env.VITE_API_URL  // URL real definida en entorno
-  : isProduction
-    ? '/.netlify/functions'       // Si usas funciones Netlify
-    : '/backend-api';             // Ruta relativa para desarrollo (proxy local)
-
-// Crear instancia de Axios
+// Crear la instancia de axios con la configuración inicial
 const api = axios.create({
   baseURL,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   },
-  timeout: 10000,
-  withCredentials: false,
+  timeout: 10000 // 10 segundos de espera
 });
 
-// Interceptor para agregar token (si existe)
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Interceptor para manejo de respuestas y errores
+// Interceptor para manejar errores de manera centralizada
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+  response => response,
+  error => {
+    if (error.response) {
+      // El servidor respondió con un código de estado fuera del rango 2xx
+      console.error('Error de respuesta:', error.response.status, error.response.data);
+    } else if (error.request) {
+      // La solicitud fue hecha pero no se recibió respuesta
+      console.error('Error de solicitud:', error.request);
+    } else {
+      // Algo sucedió al configurar la solicitud
+      console.error('Error:', error.message);
     }
     return Promise.reject(error);
   }
 );
+
+// Función para agregar o eliminar el token de autenticación
+export function setAuthToken(token) {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
+}
 
 export default api;
