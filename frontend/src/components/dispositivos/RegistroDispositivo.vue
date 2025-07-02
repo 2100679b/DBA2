@@ -41,11 +41,11 @@
         </div>
 
         <div class="row p-2">
-          <div class="col d-flex justify-content-between">
+          <div class="col">
             <button class="btn btn-outline-success" type="submit">
               <i class="bi bi-box-arrow-in-right"></i> Guardar
             </button>
-            <button class="btn btn-outline-secondary" type="button" @click="cancelar">
+            <button class="btn btn-outline-secondary" type="button" @click="limpiar">
               <i class="bi bi-x-circle"></i> Cancelar
             </button>
           </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import axios from '@/api';
+import axios from '@/api' // Asegúrate de tener src/api.js
 
 export default {
   name: 'RegistroDispositivo',
@@ -69,9 +69,9 @@ export default {
         potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
         voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
         corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
-        caudal: { nominal: 1.0, minimo: 0.1, maximo: 1.2, um: 'm3/minuto' },
+        caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
         estado: 1,
-        registro_usuario: 0 // <- cámbialo si usas usuario logueado
+        registro_usuario: 0
       },
       alerta: {
         mensaje: ''
@@ -83,18 +83,25 @@ export default {
       try {
         const res = await axios.post('/dispositivos', this.dispositivo);
         alert(`✅ Dispositivo guardado: ${res.data.nombre}`);
-        this.redirigir();
+        this.limpiar();
       } catch (error) {
         console.error(error);
         this.alerta.mensaje =
-          error.response?.data?.error ||
-          'Error al guardar el dispositivo. Intenta más tarde.';
+          error.response?.data?.error || 'Error al guardar el dispositivo.';
       }
     },
-    cancelar() {
-      this.redirigir();
-    },
-    redirigir() {
+    limpiar() {
+      this.dispositivo = {
+        nombre: '',
+        ubicacion: '',
+        coordenadas: '19.7060° N, 101.1950° W',
+        potencia: { nominal: 7.4, minimo: 6.2, maximo: 8.6, um: 'KW' },
+        voltaje: { nominal: 240, minimo: 230, maximo: 250, um: 'Volts' },
+        corriente: { nominal: 30, minimo: 25, maximo: 35, um: 'Amperes' },
+        caudal: { nominal: 1.0, minimo: 0.10, maximo: 1.20, um: 'm3/minuto' },
+        estado: 1,
+        registro_usuario: 0
+      };
       this.$router.push('/menu/dispositivos');
     }
   }

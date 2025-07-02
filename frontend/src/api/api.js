@@ -1,16 +1,26 @@
 import axios from 'axios';
 
-// Base URL según entorno
+// Determinar si estamos en producción
+const isProduction = import.meta.env.MODE === 'production';
+
+// Base URL:
+const baseURL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL  // URL real definida en entorno
+  : isProduction
+    ? '/.netlify/functions'       // Si usas funciones Netlify
+    : '/backend-api';             // Ruta relativa para desarrollo (proxy local)
+
+// Crear instancia de Axios
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/backend-api', // 👈 redireccionado por netlify.toml
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 segundos
-  withCredentials: false, // Solo true si usas cookies de sesión
+  timeout: 10000,
+  withCredentials: false,
 });
 
-// Interceptor para requests - agregar token si existe
+// Interceptor para agregar token (si existe)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -22,13 +32,13 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor para responses - manejo de errores
+// Interceptor para manejo de respuestas y errores
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login'; // Redirige si token inválido
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
