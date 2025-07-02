@@ -1,3 +1,4 @@
+// main.js
 import './assets/main.css';
 
 import { createApp } from 'vue';
@@ -5,8 +6,9 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
-import Toast from 'vue-toastification';
-import 'vue-toastification/dist/index.css'; // Importa los estilos
+// Importa el plugin completo en lugar de solo la función
+import ToastPlugin from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 import '@popperjs/core';
 import 'bootstrap';
@@ -28,7 +30,8 @@ const toastOptions = {
   icon: true
 };
 
-app.use(Toast, toastOptions);
+// Registra el plugin globalmente
+app.use(ToastPlugin, toastOptions);
 app.use(store);
 app.use(router);
 app.mount('#app');
