@@ -8,7 +8,12 @@ const port = process.env.PORT || 3000;
 
 // Configuración de CORS
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin: [
+    process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+    'https://demodba2.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ],
   credentials: true
 }));
 
@@ -330,6 +335,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en http://0.0.0.0:${port}`);
+  console.log(`Servidor corriendo en http://18.119.167.171:${port}`);
 });
