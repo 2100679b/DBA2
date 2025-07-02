@@ -1,12 +1,13 @@
 import axios from 'axios';
 
+// Base URL según entorno
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://18.119.167.171:3001/api',
+  baseURL: import.meta.env.VITE_API_URL || '/backend-api', // 👈 redireccionado por netlify.toml
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 segundos de espera
-  withCredentials: false // Importante para CORS
+  timeout: 10000, // 10 segundos
+  withCredentials: false, // Solo true si usas cookies de sesión
 });
 
 // Interceptor para requests - agregar token si existe
@@ -18,21 +19,16 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Interceptor para responses - manejo de errores
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expirado o inválido
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = '/login'; // Redirige si token inválido
     }
     return Promise.reject(error);
   }
