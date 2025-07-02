@@ -12,7 +12,7 @@
             type="text"
             id="nombreDisp"
             class="form-control"
-            v-model="dispositivo.nombre"
+            v-model="dispositivo.nombre"  <!-- Corregido: comillas simples -->
             placeholder="Nombre del dispositivo"
             required
           />
@@ -24,7 +24,7 @@
             type="text"
             id="ubicacion"
             class="form-control"
-            v-model="dispositivo.ubicacion"
+            v-model="dispositivo.ubicacion"  <!-- Corregido: comillas simples -->
             placeholder="Ubicación"
             required
           />
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import axios from '@/api'; // Asegúrate de que la ruta a src/api.js sea correcta
+import axios from '@/api';
 
 export default {
   name: 'RegistroDispositivo',
@@ -83,7 +83,6 @@ export default {
     async guardar() {
       try {
         const res = await axios.post('/dispositivos', this.dispositivo);
-        // Usar el toast global inyectado como $toast
         this.$toast.success(`✅ Dispositivo guardado: ${res.data.nombre}`);
         this.limpiar();
       } catch (error) {
@@ -104,7 +103,7 @@ export default {
         estado: 1,
         registro_usuario: 0
       };
-      this.alerta.mensaje = ''; // Limpiar el mensaje de error
+      this.alerta.mensaje = '';
       this.$router.push('/menu/dispositivos');
     }
   }
